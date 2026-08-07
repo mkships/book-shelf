@@ -128,25 +128,41 @@ main {
 }
 .btn-ghost:hover { border-color: var(--muted); color: var(--ink); }
 
-/* ---------- Section headers ---------- */
-.section__head {
+/* ---------- Tabs ---------- */
+.tablist {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
+    gap: 1rem;
     border-bottom: 1px solid var(--rule-strong);
-    padding-bottom: 0.4rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
 }
-.section__title {
-    font-family: "Lato", sans-serif;
-    font-size: 0.8rem;
+.tab {
+    font-family: inherit;
+    font-size: 0.85rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-soft);
-    margin: 0;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.7rem 0.2rem;
+    margin-bottom: -1px;
+    cursor: pointer;
 }
-.section__count { color: var(--muted); font-size: 0.8rem; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--green);
+}
+.tab__count {
+    display: inline-block;
+    margin-left: 0.25rem;
+    min-width: 1.4em;
+    padding: 0.05em 0.2em;
+    border-radius: 999px;
+    background-color: var(--rule);
+    color: var(--ink-soft);
+    font-size: 0.75rem;
+}
+
 .section { margin-bottom: 3rem; }
 
 /* ---------- Status line ---------- */
@@ -160,7 +176,7 @@ main {
 /* ---------- Card grid ---------- */
 .book-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1rem;
 }
 
@@ -218,9 +234,24 @@ main {
 }
 .book-card__actions {
     margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+}
+.book-card__actions > button:only-child {
+    margin: 0 auto;
 }
 .book-card:hover {
     border-color: var(--green-hover);
+}
+.book-card--read {
+    opacity: 0.55;
+    filter: grayscale(70%);
+}
+.book-card--read:hover {
+    opacity: 0.85;
+    filter: grayscale(30%);
 }
 
 /* ---------- Empty state ---------- */

@@ -5,11 +5,42 @@ const shelfCount = document.getElementById("shelfCount")
 const searchForm = document.getElementById("searchForm")
 const searchResults = document.getElementById("searchResults")
 const readlist = document.getElementById("readlist")
+const tabs = document.querySelectorAll(".tab")
+
+// State: books the user has saved to their shelf, persisted to localStorage.
+// Each entry carries a `read` flag so a future toggle can flip read/unread
+// without a second array //
+const STORAGE_KEY = "bookshelf.readList"
+
+function loadReadList() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch (error) {
+    return []
+  }
+}
+
+function saveReadList() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(readList))
+}
+
+let readList = loadReadList()
 
 // Add event listeners and corresponding handler functions //
 searchForm.addEventListener("submit", handleSearchSubmit)
 searchResults.addEventListener("click", handleResultsClick)
 readlist.addEventListener("click", handleReadlistClick)
+tabs.forEach((tab) => tab.addEventListener("click", () => activateTab(tab)))
+
+function activateTab(selectedTab) {
+  tabs.forEach((tab) => {
+    const isSelected = tab === selectedTab
+    tab.setAttribute("aria-selected", String(isSelected))
+    tab.tabIndex = isSelected ? 0 : -1
+    document.getElementById(tab.getAttribute("aria-controls")).hidden = !isSelected
+  })
+}
 
 async function handleSearchSubmit(event) {
   event.preventDefault()
@@ -30,16 +61,22 @@ function handleResultsClick(event) {
   const button = event.target.closest('button[data-action="add"]')
   if (!button) return
   const card = button.closest(".book-card")
-  const workId = card.dataset.id
-  // TODO: addBook(workId)
+  addBook(card.book)
 }
 
 function handleReadlistClick(event) {
-  const button = event.target.closest('button[data-action="remove"]')
-  if (!button) return
-  const card = button.closest(".book-card")
-  const workId = card.dataset.id
-  // TODO: removeBook(workId)
+  const removeButton = event.target.closest('button[data-action="remove"]')
+  if (removeButton) {
+    const card = removeButton.closest(".book-card")
+    removeBook(card.dataset.id)
+    return
+  }
+
+  const readButton = event.target.closest('button[data-action="mark-read"]')
+  if (readButton) {
+    const card = readButton.closest(".book-card")
+    markAsRead(card.dataset.id)
+  }
 }
 
 // Add functions to retrieve results from Open Library API and normalise the raw json //
@@ -63,11 +100,17 @@ function toBook(doc) {
   }
 }
 
-// Add function to build the book card //
-function buildBookCard(book) {
+// Add function to build a book card. `context` controls the card's buttons:
+// "results" gets a single "Want to read" button, "shelf" gets a "Read it"
+// button (once read, it disappears) plus a Remove button. //
+function buildBookCard(book, context = "results") {
   const article = document.createElement("article")
   article.className = "book-card"
+  if (context === "shelf" && book.read) {
+    article.classList.add("book-card--read")
+  }
   article.dataset.id = book.id
+  article.book = book
 
   const cover = document.createElement("img")
   cover.className = "book-card__cover"
@@ -92,17 +135,60 @@ function buildBookCard(book) {
   const actions = document.createElement("div")
   actions.className = "book-card__actions"
 
-  const addButton = document.createElement("button")
-  addButton.type = "button"
-  addButton.className = "btn btn-primary"
-  addButton.dataset.action = "add"
-  addButton.textContent = "Want to read"
+  if (context === "results") {
+    const addButton = document.createElement("button")
+    addButton.type = "button"
+    addButton.className = "btn btn-primary"
+    addButton.dataset.action = "add"
+    addButton.textContent = "Want to read 📖"
+    actions.appendChild(addButton)
+  } else {
+    if (!book.read) {
+      const readButton = document.createElement("button")
+      readButton.type = "button"
+      readButton.className = "btn btn-ghost"
+      readButton.dataset.action = "mark-read"
+      readButton.textContent = "Read it ☑️"
+      actions.appendChild(readButton)
+    }
 
-  actions.appendChild(addButton)
+    const removeButton = document.createElement("button")
+    removeButton.type = "button"
+    removeButton.className = "btn btn-ghost"
+    removeButton.dataset.action = "remove"
+    removeButton.textContent = "Remove ✖️"
+    actions.appendChild(removeButton)
+  }
   body.append(title, author, meta, actions)
   article.append(cover, body)
 
   return article
+}
+
+// Add functions to manage the shelf (readList) //
+function addBook(book) {
+  const alreadySaved = readList.some((saved) => saved.id === book.id)
+  if (alreadySaved) return
+
+  readList = [...readList, { ...book, read: false }]
+  saveReadList()
+  renderShelf()
+  updateShelfCount()
+}
+
+function removeBook(workId) {
+  readList = readList.filter((saved) => saved.id !== workId)
+  saveReadList()
+  renderShelf()
+  updateShelfCount()
+}
+
+function markAsRead(workId) {
+  readList = readList.map((saved) =>
+    saved.id === workId ? { ...saved, read: true } : saved
+  )
+  saveReadList()
+  renderShelf()
 }
 
 // Add function to render the search results //
@@ -117,7 +203,32 @@ function renderResults(books) {
     return
   }
 
-  const cards = books.map(buildBookCard)
+  const cards = books.map((book) => buildBookCard(book, "results"))
   searchResults.append(...cards)
 }
+
+// Add function to render the shelf //
+function renderShelf() {
+  readlist.innerHTML = ""
+
+  if (!readList.length) {
+    const empty = document.createElement("div")
+    empty.className = "empty"
+    empty.textContent = "Your shelf is empty — add books from the search results above."
+    readlist.appendChild(empty)
+    return
+  }
+
+  const cards = readList.map((book) => buildBookCard(book, "shelf"))
+  readlist.append(...cards)
+}
+
+// Add function to update the shelf count //
+function updateShelfCount() {
+  shelfCount.textContent = readList.length
+}
+
+// Reflect any persisted shelf data on first load //
+renderShelf()
+updateShelfCount()
 

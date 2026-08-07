@@ -30,19 +30,25 @@
           type="text"
           id="searchInput"
           class="search__input"
-          placeholder="Try a title or author — e.g. Dune, Le Guin, Beloved"
+          placeholder="Try a title or author — e.g. Dune, Stephen King, Animal Farm"
           autocomplete="off"
         >
         <button type="submit" class="btn btn-primary">Search</button>
       </div>
     </form>
 
-    <!-- RESULTS: search results render like cards -->
-    <section class="section">
-      <div class="section__head">
-        <h2 class="section__title">Search results</h2>
-      </div>
+    <!-- TABS: switch between search results and the saved shelf -->
+    <div class="tablist" role="tablist" aria-label="Bookshelf views">
+      <button type="button" class="tab" id="tab-results" role="tab" aria-selected="true" aria-controls="panel-results">
+        Search results
+      </button>
+      <button type="button" class="tab" id="tab-shelf" role="tab" aria-selected="false" aria-controls="panel-shelf" tabindex="-1">
+        My shelf <span id="shelfCount" class="tab__count">0</span>
+      </button>
+    </div>
 
+    <!-- RESULTS: search results render like cards -->
+    <section class="section" id="panel-results" role="tabpanel" aria-labelledby="tab-results">
       <!-- Show "Searching…", "No books found.", or an error message here -->
       <p id="searchStatus" class="status"></p>
 
@@ -53,32 +59,8 @@
     </section>
 
     <!-- MY SHELF: user's saved readlist[] renders here -->
-    <section class="section">
-      <div class="section__head">
-        <h2 class="section__title">My shelf</h2>
-        <span id="shelfCount" class="section__count">0 books</span>
-      </div>
-
+    <section class="section" id="panel-shelf" role="tabpanel" aria-labelledby="tab-shelf" hidden>
       <div id="readlist" class="book-grid">
-        <!-- START static example card — a saved book with a rating and Remove action -->
-        <article class="book-card" data-id="/works/OL27482W">
-          <img
-            class="book-card__cover"
-            src="https://covers.openlibrary.org/b/id/12645114-M.jpg"
-            alt="Cover of Dune"
-          >
-          <div class="book-card__body">
-            <h3 class="book-card__title">Dune</h3>
-            <p class="book-card__author">Frank Herbert</p>
-            <p class="book-card__meta">First published 1965</p>
-            <div class="stars" aria-hidden="true">★★★★☆</div>
-            <div class="book-card__actions">
-              <button type="button" class="btn btn-ghost" data-action="remove">Remove</button>
-            </div>
-          </div>
-        </article>
-        <!-- END static example card -->
-
         <!-- Empty state to show when the shelf is empty -->
         <div class="empty">Your shelf is empty — add books from the search results above.</div>
       </div>
