@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookshelf — find and save your favorite books</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <script src="index.js" defer></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="brand">Book<span class="brand__mark">Shelf</span></span>
+      <span class="tagline">Find a book. Add it to your shelf. Track your reading.</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- SEARCH: user searches for books by entering a search term -->
+    <form id="searchForm" class="search">
+      <label class="search__label" for="searchInput">Search for a book</label>
+      <div class="search__row">
+        <input
+          type="text"
+          id="searchInput"
+          class="search__input"
+          placeholder="Try a title or author — e.g. Dune, Le Guin, Beloved"
+          autocomplete="off"
+        >
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </form>
+
+    <!-- RESULTS: search results render like cards -->
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">Search results</h2>
+      </div>
+
+      <!-- Show "Searching…", "No books found.", or an error message here -->
+      <p id="searchStatus" class="status"></p>
+
+      <div id="searchResults" class="book-grid">
+        <!-- START static example card — buildBookCard(book) should output this shape.
+             The renderResults() will clear #searchResults and inject cards like it. -->
+        <article class="book-card" data-id="/works/OL27448W">
+          <img
+            class="book-card__cover"
+            src="https://covers.openlibrary.org/b/id/8101359-M.jpg"
+            alt="Cover of The Left Hand of Darkness"
+          >
+          <div class="book-card__body">
+            <h3 class="book-card__title">The Left Hand of Darkness</h3>
+            <p class="book-card__author">Ursula K. Le Guin</p>
+            <p class="book-card__meta">First published 1969</p>
+            <div class="book-card__actions">
+              <button type="button" class="btn btn-primary" data-action="add">Want to read</button>
+            </div>
+          </div>
+        </article>
+        <!-- END static example card -->
+
+        <!-- Empty state to show when there are no results yet: -->
+        <div class="empty">Search for a book above to start building your shelf.</div>
+      </div>
+    </section>
+
+    <!-- MY SHELF: user's saved readlist[] renders here -->
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">My shelf</h2>
+        <span id="shelfCount" class="section__count">0 books</span>
+      </div>
+
+      <div id="watchlist" class="book-grid">
+        <!-- START static example card — a saved book with a rating and Remove action -->
+        <article class="book-card" data-id="/works/OL27482W">
+          <img
+            class="book-card__cover"
+            src="https://covers.openlibrary.org/b/id/12645114-M.jpg"
+            alt="Cover of Dune"
+          >
+          <div class="book-card__body">
+            <h3 class="book-card__title">Dune</h3>
+            <p class="book-card__author">Frank Herbert</p>
+            <p class="book-card__meta">First published 1965</p>
+            <div class="stars" aria-hidden="true">★★★★☆</div>
+            <div class="book-card__actions">
+              <button type="button" class="btn btn-ghost" data-action="remove">Remove</button>
+            </div>
+          </div>
+        </article>
+        <!-- END static example card -->
+
+        <!-- Empty state to show when the shelf is empty -->
+        <div class="empty">Your shelf is empty — add books from the search results above.</div> 
+      </div>
+    </section>
+  </main>
+  
+</body>
+</html>
