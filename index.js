@@ -1,0 +1,1 @@
+const userInput = document.getElementById("searchInput")
