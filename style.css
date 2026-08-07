@@ -123,8 +123,8 @@ main {
     background-color: var(--surface);
     color: var(--ink-soft);
     border-color: var(--rule-strong);
-    padding: 0.45rem 0.8rem;
-    font-size: 0.82rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
 }
 .btn-ghost:hover { border-color: var(--muted); color: var(--ink); }
 
@@ -241,6 +241,15 @@ main {
 }
 .book-card__actions > button:only-child {
     margin: 0 auto;
+}
+.book-card__actions > button[data-action="mark-read"]:hover {
+    background-color: var(--green-hover);
+    border: none;
+    color: #fff
+}
+.book-card__actions > button[data-action="remove"]:hover {
+    background-color: rgba(241, 7, 30, 0.338);
+    border: none;
 }
 .book-card:hover {
     border-color: var(--green-hover);
