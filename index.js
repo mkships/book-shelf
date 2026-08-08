@@ -27,6 +27,10 @@ function saveReadList() {
 
 let readList = loadReadList()
 
+// State: the most recent search results, kept so we can re-render the
+// results list (and its button states) after the shelf changes //
+let lastResults = []
+
 // Add event listeners and corresponding handler functions //
 searchForm.addEventListener("submit", handleSearchSubmit)
 searchResults.addEventListener("click", handleResultsClick)
@@ -136,11 +140,18 @@ function buildBookCard(book, context = "results") {
   actions.className = "book-card__actions"
 
   if (context === "results") {
+    const alreadySaved = readList.some((saved) => saved.id === book.id)
     const addButton = document.createElement("button")
     addButton.type = "button"
-    addButton.className = "btn btn-primary"
-    addButton.dataset.action = "add"
-    addButton.textContent = "Want to read 📖"
+    if (alreadySaved) {
+      addButton.className = "btn btn-ghost"
+      addButton.disabled = true
+      addButton.textContent = "Added to shelf ✔️"
+    } else {
+      addButton.className = "btn btn-primary"
+      addButton.dataset.action = "add"
+      addButton.textContent = "Want to read 📖"
+    }
     actions.appendChild(addButton)
   } else {
     if (!book.read) {
@@ -174,6 +185,7 @@ function addBook(book) {
   saveReadList()
   renderShelf()
   updateShelfCount()
+  if (lastResults.length) renderResults(lastResults)
 }
 
 function removeBook(workId) {
@@ -181,6 +193,7 @@ function removeBook(workId) {
   saveReadList()
   renderShelf()
   updateShelfCount()
+  if (lastResults.length) renderResults(lastResults)
 }
 
 function markAsRead(workId) {
@@ -193,6 +206,7 @@ function markAsRead(workId) {
 
 // Add function to render the search results //
 function renderResults(books) {
+  lastResults = books
   searchResults.innerHTML = ""
 
   if (!books.length) {
